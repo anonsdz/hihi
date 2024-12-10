@@ -1,6 +1,0 @@
-services:
-  - type: web
-    name: my-service
-    env: docker
-    dockerfilePath: ./Dockerfile  # Đường dẫn đến Dockerfile
-    port: 8080                   # Cổng mà ứng dụng lắng nghe
