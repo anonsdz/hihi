@@ -1,7 +1,7 @@
 # Sử dụng Ubuntu làm base image
 FROM ubuntu:latest
 
-# Bước 2: Cài đặt các gói cần thiết bao gồm sudo, Python, pip, htop và speedtest-cli
+# Bước 2: Cài đặt các gói cần thiết
 RUN apt-get update && apt-get install -y \
     sudo \
     python3 \
@@ -9,8 +9,16 @@ RUN apt-get update && apt-get install -y \
     procps \
     htop \
     speedtest-cli \
+    openssh-server \
     && rm -rf /var/lib/apt/lists/*
 
-# Khởi động container và lắng nghe trên cổng 8080
-EXPOSE 8080
-CMD ["python3", "-m", "http.server", "8080"]
+# Bước 3: Cấu hình SSH
+RUN mkdir /var/run/sshd && echo 'root:root' | chpasswd && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+# Bước 4: Mở cổng SSH
+EXPOSE 22
+
+# Bước 5: Chạy SSH khi container khởi động
+CMD ["/usr/sbin/sshd", "-D"]
